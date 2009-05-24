@@ -16,6 +16,8 @@ _objs := $(call cc.c.to.o,$(addprefix $(pwd)/src/, \
 ))
 
 all: | $(_lib)
+$(_lib): cc.objs := $(_objs)
+$(_lib): cc.macro.flags += -DLUA_USE_LINUX
 $(_lib): $(_objs)
 	$(cc.so.rule)
 
@@ -28,6 +30,7 @@ _objs := $(call cc.c.to.o,$(addprefix $(pwd)/src/, \
 
 all: | $(_app)
 $(_app): cc.libs += lua
+$(_app): cc.objs := $(_objs)
 $(_app): $(_objs)
 	$(cc.exe.rule)
 
@@ -40,6 +43,7 @@ _objs := $(call cc.c.to.o,$(addprefix $(pwd)/src/, \
 
 all: | $(_app)
 $(_app): cc.libs += lua
+$(_app): cc.objs := $(_objs)
 $(_app): $(_objs)
 	$(cc.exe.rule)
 
