@@ -1,4 +1,4 @@
-pwd := $(pwd)
+_pwd := $(pwd)
 
 include $(make-common.dir)/tool/cc.mk
 include $(make-common.dir)/tool/cp.mk
@@ -7,7 +7,7 @@ include $(make-common.dir)/layout.mk
 ######################################################################
 
 _lib  := $(lib.dir)/liblua.so
-_objs := $(call cc.c.to.o,$(addprefix $(pwd)/src/, \
+_objs := $(call cc.c.to.o,$(addprefix $(_pwd)/src/, \
 	lapi.c lcode.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c lmem.c \
 	lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c ltm.c  \
 	lundump.c lvm.c lzio.c \
@@ -24,7 +24,7 @@ $(_lib): $(_objs)
 ######################################################################
 
 _app  := $(bin.dir)/lua
-_objs := $(call cc.c.to.o,$(addprefix $(pwd)/src/, \
+_objs := $(call cc.c.to.o,$(addprefix $(_pwd)/src/, \
 	lua.c \
 ))
 
@@ -37,7 +37,7 @@ $(_app): $(_objs)
 ######################################################################
 
 _app  := $(bin.dir)/luac
-_objs := $(call cc.c.to.o,$(addprefix $(pwd)/src/, \
+_objs := $(call cc.c.to.o,$(addprefix $(_pwd)/src/, \
 	luac.c print.c \
 ))
 
@@ -49,7 +49,7 @@ $(_app): $(_objs)
 
 ######################################################################
 # Export headers:
-$(include.dir)/%.h: $(pwd)/src/%.h
+$(include.dir)/%.h: $(_pwd)/src/%.h
 	$(cp.rule)
 
 all: $(addprefix $(include.dir)/,lua.h luaconf.h lualib.h lauxlib.h)
