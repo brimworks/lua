@@ -65,7 +65,7 @@ lua.test: | $(bin.dir)/lua
 #lua.test: lua.path += $(_pwd)
 lua.test: $(wildcard $(_pwd)/test/*.lua)
 	@mkdir -p $(tmp.dir)
-	cd $(tmp.dir); exit=0; for t in $^; do \
+	cd $(tmp.dir); exit=0; for t in $(filter-out %/luac.lua %/readonly.lua,$^); do \
 		echo "TESTING: $$t"; \
-		env -i $(lua.run) $(lua) $$t || exit=$$?; \
+		env -i $(lua.run) $(lua) $$t < /dev/null || exit=$$?$$(echo FAILED: $$t 1>&2); \
 	done; exit $$exit
