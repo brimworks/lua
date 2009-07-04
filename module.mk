@@ -2,6 +2,7 @@ _pwd := $(pwd)
 
 include $(make-common.dir)/tool/cc.mk
 include $(make-common.dir)/tool/cp.mk
+include $(make-common.dir)/tool/lua.mk
 include $(make-common.dir)/layout.mk
 
 ######################################################################
@@ -53,3 +54,18 @@ $(include.dir)/%.h: $(_pwd)/src/%.h
 	$(cp.rule)
 
 all: $(addprefix $(include.dir)/,lua.h luaconf.h lualib.h lauxlib.h)
+
+######################################################################
+# How to run the tests:
+.PHONY: lua.test
+test: | lua.test
+
+lua ?= lua
+lua.test: | $(bin.dir)/lua
+#lua.test: lua.path += $(_pwd)
+lua.test: $(wildcard $(_pwd)/test/*.lua)
+	@mkdir -p $(tmp.dir)
+	cd $(tmp.dir); exit=0; for t in $^; do \
+		echo "TESTING: $$t"; \
+		env -i $(lua.run) $(lua) $$t || exit=$$?; \
+	done; exit $$exit
