@@ -5,6 +5,9 @@ include $(make-common.dir)/tool/cp.mk
 include $(make-common.dir)/tool/lua.mk
 include $(make-common.dir)/layout.mk
 
+##### Uncomment this if you want to enable assertions:
+# lua.assert= -Dlua_assert=assert -include assert.h
+
 ######################################################################
 
 _lib  := $(lib.dir)/liblua.so
@@ -14,11 +17,12 @@ _objs := $(call cc.c.to.o,$(addprefix $(_pwd)/src/, \
 	lundump.c lvm.c lzio.c \
 	lauxlib.c lbaselib.c ldblib.c liolib.c lmathlib.c loslib.c ltablib.c \
 	lstrlib.c loadlib.c linit.c \
+	lcoco.c \
 ))
 
 all: | $(_lib)
 $(_lib): cc.objs := $(_objs)
-$(_lib): cc.macro.flags += -DLUA_USE_LINUX
+$(_lib): cc.macro.flags += -DLUA_USE_LINUX $(lua.assert)
 $(_lib): $(_objs)
 	$(cc.so.rule)
 
@@ -31,6 +35,7 @@ _objs := $(call cc.c.to.o,$(addprefix $(_pwd)/src/, \
 
 all: | $(_app)
 $(_app): cc.libs += lua
+$(_app): cc.macro.flags += $(lua.assert)
 $(_app): cc.objs := $(_objs)
 $(_app): $(_objs)
 	$(cc.exe.rule)
@@ -44,6 +49,7 @@ _objs := $(call cc.c.to.o,$(addprefix $(_pwd)/src/, \
 
 all: | $(_app)
 $(_app): cc.libs += lua
+$(_app): cc.macro.flags += $(lua.assert)
 $(_app): cc.objs := $(_objs)
 $(_app): $(_objs)
 	$(cc.exe.rule)
@@ -63,7 +69,7 @@ test: | lua.test
 lua ?= lua
 lua.test: | $(bin.dir)/lua
 #lua.test: lua.path += $(_pwd)
-lua.test: $(wildcard $(_pwd)/test/*.lua)
+lua.test: $(wildcard $(_pwd)/test/*.lua) $(wildcard $(_pwd)/cocotest/*.lua)
 	@mkdir -p $(tmp.dir)
 	cd $(tmp.dir); exit=0; for t in $(filter-out %/luac.lua %/readonly.lua,$^); do \
 		echo "TESTING: $$t"; \
