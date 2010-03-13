@@ -434,8 +434,27 @@ LUALIB_API char *luaL_prepbuffer (luaL_Buffer *B) {
 
 
 LUALIB_API void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l) {
-  while (l--)
-    luaL_addchar(B, *s++);
+  size_t min;
+  size_t avail = bufffree(B);
+
+  if (!avail) {
+    luaL_prepbuffer(B);
+    avail = bufffree(B);
+  }
+
+  while (1) {
+    min = avail <= l ? avail : l;
+    memcpy(B->p, s, min);
+    B->p += min;
+    s += min;
+    l -= min;
+    if (l) {
+      luaL_prepbuffer(B);
+      avail = bufffree(B);
+    }
+    else
+      break;
+  }
 }
 
 
